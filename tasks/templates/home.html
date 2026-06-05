@@ -1,0 +1,230 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <title>To-Do App</title>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="hero-section">
+    <h1>My To-Do List</h1>
+    <p>Welcome, {{ request.user.username }} 👋</p>
+
+    <p>Organize your tasks and boost productivity</p>
+</div>
+    <hr class="title-line">
+
+    <div class="top-buttons">
+
+    <button id="dark-btn">Dark Mode</button>
+
+    <a href="/logout/" class="logout-btn">
+        Logout
+    </a>
+
+</div>
+    <div class="stats">
+
+    <div class="stat-box">
+        <h3>{{ total_tasks }}</h3>
+        <p>Total</p>
+    </div>
+
+    <div class="stat-box">
+        <h3>{{ completed_tasks }}</h3>
+        <p>Completed</p>
+    </div>
+
+    <div class="stat-box">
+        <h3>{{ pending_tasks }}</h3>
+        <p>Pending</p>
+    </div>
+    <div class="progress-container">
+
+    <h3>Progress: {{ progress }}%</h3>
+
+    <div class="progress-bar">
+        <div class="progress-fill"
+             style="width: {{ progress }}%;">
+        </div>
+    </div>
+
+</div>
+
+</div>
+
+    <form method="GET" class="search-form">
+
+    <input type="text"
+           name="search"
+           placeholder="Search tasks">
+
+    <button type="submit">Search</button>
+
+</form>
+
+<div class="filters">
+
+    <button onclick="window.location.href='/'">All</button>
+
+    <button onclick="window.location.href='/?filter=completed'">
+        Completed
+    </button>
+
+    <button onclick="window.location.href='/?filter=pending'">
+        Pending
+    </button>
+
+</div>
+<form method="GET">
+    <select name="sort" onchange="this.form.submit()">
+        <option value="">Sort Tasks</option>
+        <option value="new">Newest First</option>
+        <option value="old">Oldest First</option>
+        <option value="high">High Priority</option>
+    </select>
+</form>
+
+
+
+    <form method="POST" class="task-form">
+
+        {% csrf_token %}
+
+        <input type="text" name="title" placeholder="Enter task">
+
+        <input type="date" name="due_date">
+
+        <select name="priority">
+
+            <option value="High">High</option>
+            <option value="Medium" selected>Medium</option>
+            <option value="Low">Low</option>
+
+        </select>
+
+        <button type="submit">Add</button>
+
+    </form>
+
+    <div class="tasks">
+
+        {% for task in tasks %}
+
+        <div class="task-card">
+
+            <div>
+
+                {% if task.completed %}
+
+                    <span class="completed">
+                        {{ task.title }}
+                    </span>
+
+                {% else %}
+
+                    <span>{{ task.title }}</span>
+
+                {% endif %}
+
+                <br>
+                
+
+            {% if task.due_date %}
+                <small class="due-date">
+                    Due: {{ task.due_date }}
+                </small>
+            {% endif %}
+
+                <br>
+
+                {% if task.priority == "High" %}
+                <small class="high-priority">🔴 High</small>
+
+                {% elif task.priority == "Medium" %}
+                    <small class="medium-priority">🟠 Medium</small>
+
+                {% else %}
+                    <small class="low-priority">🟢 Low</small>
+                {% endif %}
+
+            </div>
+
+            <div class="buttons">
+
+                <a href="/complete/{{task.id}}/">
+
+                    <button class="complete-btn">
+
+                        {% if task.completed %}
+                            Undo
+                        {% else %}
+                            Complete
+                        {% endif %}
+
+                    </button>
+
+                </a>
+
+                <a href="/edit/{{task.id}}/">
+                    <button class="edit-btn">
+                        Edit
+                    </button>
+                </a>
+
+                <a href="/delete/{{task.id}}/"
+                    onclick="return confirm('Delete this task?')">
+                        <button class="delete-btn">
+                            Delete
+                        </button>
+                    </a>
+
+            </div>
+
+        </div>
+         {% empty %}
+
+    <p class="no-task">No tasks found. 
+        Add your first task
+    </p>
+
+   
+
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+<script>
+
+const button = document.getElementById("dark-btn");
+
+if(localStorage.getItem("theme") === "dark"){
+    document.body.classList.add("dark");
+}
+
+button.onclick = function(){
+
+    document.body.classList.toggle("dark");
+
+    if(document.body.classList.contains("dark")){
+        localStorage.setItem("theme", "dark");
+    }
+    else{
+        localStorage.setItem("theme", "light");
+    }
+
+}
+
+</script>
+
+</body>
+</html> 

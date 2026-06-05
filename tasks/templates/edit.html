@@ -1,0 +1,41 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Edit Task</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+
+<body class="auth-page">
+
+<div class="edit-container">
+
+    <h2>Edit Task ✏️</h2>
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        <input type="text"
+               name="title"
+               value="{{ task.title }}"
+               required>
+
+        <button type="submit">
+            Save Changes
+        </button>
+
+    </form>
+
+    <br>
+
+    <a href="/">
+        ← Back to Home
+    </a>
+
+</div>
+
+</body>
+</html>
